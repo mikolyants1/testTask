@@ -57,10 +57,10 @@ input::placeholder{
 .foot1{
   width: 395px;
   margin: auto;
-  height: 5px;
-  border-left: 1px solid rgb(105, 105, 105);
-  border-bottom: 1px solid rgb(105, 105, 105);
-  border-right: 1px solid rgb(105, 105, 105);
+  height: 3px;
+  border-left: 1px solid rgb(144, 144, 144);
+  border-bottom: 1px solid rgb(148, 147, 147);
+  border-right: 1px solid rgb(153, 152, 152);
   background-color: white; 
 }
 .img{
@@ -73,12 +73,12 @@ input::placeholder{
 .foot2{
   width: 390px;
   margin: auto;
-  height: 5px;
-  border-left: 1px solid rgb(105, 105, 105);
-  border-bottom: 1px solid rgb(105, 105, 105);
-  border-right: 1px solid rgb(105, 105, 105);
+  height: 3px;
+  border-left: 1px solid rgb(169, 167, 167);
+  border-bottom: 1px solid rgb(149, 149, 149);
+  border-right: 1px solid rgb(157, 157, 157);
   background-color: white;
-  box-shadow: 0 2px 2px 0px rgb(154, 153, 153);
+  box-shadow: 0 1px 1px 0px rgb(154, 153, 153);
 }
 .main{
   min-height: 40px;
