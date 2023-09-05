@@ -32,6 +32,8 @@ h1{
   width:80% ;
   border: none;
   height: 90%;
+  color: grey;
+  font-size:20px ;
 }
 .set{
   height: 90%;
