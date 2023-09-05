@@ -20,11 +20,18 @@ const [todo,setTodo]=useState<string>('')
 const [bord,setBord]=useState<number>(0)
 const [del,setDel]=useState<number[]>([])
 const [list,setList]=useState<state>({item1:[],item2:[],item3:[]})
+const [count,setCount]=useState<number>(0)
 const [state,move]=useReducer(reducer,{show1:1,show2:0,show3:0})
 const all=useRef<HTMLDivElement>(null!)
 const active=useRef<HTMLDivElement>(null!)
 const comp=useRef<HTMLDivElement>(null!)
-useEffect(()=>{
+useEffect(():void=>{
+const {item1,item2,item3}:state=list
+if (bord==0) setCount(item1.length)
+else if (bord==1) setCount(item2.length)
+else setCount(item3.length)
+},[bord,list])
+useEffect(():void=>{
 const refMass:MutableRefObject<HTMLDivElement>[]=[all,active,comp]
 refMass.forEach((item:MutableRefObject<HTMLDivElement>):void=>{
   item.current.style.border='none'
@@ -56,22 +63,26 @@ const {item1,item2,item3}:state=list
 item1.push(todo)
 item2.push(todo)
 setList({item1:item1,item2:item2,item3:item3})
+setCount(list.item1.length)
   }
 const check=(e:ChangeEvent<HTMLInputElement>,item:string,i:number):void=>{
 const {item1,item2,item3}:state=list
 const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
+const index:number=Number(item2.find((x:string,i:number)=>{
+  if (x==item) return i
+}))
 if (e.target.checked){
   line[i].style.textDecoration='line-through'
   line[i].style.color='grey'
   setDel([...del,i])
-  item2.splice(i,1)
+  item2.splice(index,1)
   item3.push(item)
 }else{
   line[i].style.textDecoration='none'
   line[i].style.color='black'
   const newDel=del.filter((_:number,index:number):boolean=>index!==i)
   setDel(newDel)
-  item3.splice(i,1)
+  item3.splice(index,1)
   item2.push(item)
 }
 setList({item1:item1,item2:item2,item3:item3})
@@ -127,7 +138,7 @@ return (
         </div>
         <div className='foot'>
           <div className='count'>
-            {list.item1.length} items left
+            {count} items left
           </div>
           <div className='toogle'>
              <div className='all' ref={all}

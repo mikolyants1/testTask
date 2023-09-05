@@ -36,7 +36,7 @@ export function Active({item,show,check}:props):JSX.Element|null{
     return <div>
        {item.map((item:string,i:number)=>{
             return <div className='item' key={i}>
-            <input type="checkbox" className='check'
+            <input type="checkbox" disabled={true} className='check'
             onChange={(e):void=>check(e,item,i)} />
              <div className='text'>
               {item}
