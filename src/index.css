@@ -34,6 +34,7 @@ h1{
   height: 90%;
   color: grey;
   font-size:20px ;
+  outline: none;
 }
 .set{
   height: 90%;
@@ -42,7 +43,6 @@ h1{
   background-color: white;
   border-radius: 50%;
 }
-
 input::placeholder{
   font-size: 20px;
   color: rgb(169, 168, 168);
@@ -100,7 +100,7 @@ input::placeholder{
   width: 40px;
   height: 20px;
 }
-.comp{
+.completed{
   width: 70px;
   height:20px ;
 }
