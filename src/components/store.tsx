@@ -69,4 +69,5 @@ setDel:(action)=>set((state:store)=>{
     state.del=action
 })
 }))),{version:1,name:'todo'}))
+
 export default useStore

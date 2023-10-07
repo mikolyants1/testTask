@@ -1,4 +1,5 @@
 import {ChangeEvent,useEffect} from 'react'
+import { Check,Item } from './style'
 type props={
 item:string[]|null
 show:number,
@@ -10,40 +11,40 @@ export function All({item,show,del,check}:props):union{
 if (show==1&&item){
 useEffect(()=>{
 const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
-const check:NodeListOf<HTMLInputElement>=document.querySelectorAll('.check1')
+const check:NodeListOf<HTMLInputElement>=document.querySelectorAll('#check1')
 del?.forEach((i:number):void=>{
   line[i].style.textDecoration='line-through'
   line[i].style.color='grey'
   check[i].checked=true
     })
-    },[])
-    return <div>
-      {item.map((item:string,i:number):JSX.Element=>{
-            return <div className='item' key={i}>
-            <input type="checkbox" className='check1'
-            onChange={(e):void=>check(e,item,i)} />
+  },[])
+ return <>
+      {item.map((item:string,i:number):JSX.Element=>(
+           <div css={Item} key={i}>
+            <input type="checkbox" id='check1' css={Check}
+             onChange={(e):void=>check(e,item,i)} />
              <div className='text'>
               {item}
               </div>
             </div>
-           })}
-    </div>
+           ))}
+        </>
     } 
 return null
 }
 export function Active({item,show,check}:props):union{
 if (show==1&&item){
-    return <div>
-       {item.map((item:string,i:number):JSX.Element=>{
-            return <div className='item' key={i}>
-            <input type="checkbox" disabled={true} className='check'
+  return <>
+       {item.map((item:string,i:number):JSX.Element=>(
+           <div css={Item} key={i}>
+            <input type="checkbox" disabled={true} css={Check}
             onChange={(e):void=>check(e,item,i)} />
              <div className='text'>
               {item}
               </div>
             </div>
-           })}
-    </div>
+           ))}
+       </>
     }
     return null
 }
@@ -53,17 +54,17 @@ export function Del({item,show,check}:props):union{
       color='grey'
     }
     if (show==1&&item){
-    return <div>
-         {item.map((item:string,i:number):JSX.Element=>{
-            return <div className='item' key={i}>
-            <input type="checkbox" checked className='check'
-            onChange={(e):void=>check(e,item,i)} />
+    return <>
+         {item.map((item:string,i:number):JSX.Element=>(
+           <div css={Item} key={i}>
+            <input type="checkbox" checked css={Check}
+             onChange={(e):void=>check(e,item,i)} />
              <div style={style}>
                 {item}
               </div>
             </div>
-           })}
-    </div>
+           ))}
+        </>
     }
     return null
 }

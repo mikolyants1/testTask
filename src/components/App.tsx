@@ -2,6 +2,10 @@ import { ChangeEvent,useState,useRef,useReducer,useEffect,MutableRefObject} from
 import { All,Active,Del } from './Sort'
 import useStore, { func3, func1,func5, store, func2, func4 } from './store'
 import '../App.css'
+import { foot1, foot2, title ,foot, completed, act, alls, toogle, Img, Main, Wrap, setInp, Sets, Inp} from './style'
+import { css } from '@emotion/react'
+import { SerializedStyles } from "@emotion/react/macro";
+import img from '../assets/arr.png'
 interface state1{
   show1:number,
   show2:number,
@@ -12,16 +16,13 @@ interface action{
 }
 interface ref{
   name:string,
-  ref:MutableRefObject<HTMLDivElement>
+  ref:MutableRefObject<HTMLDivElement>,
+  style:SerializedStyles
 }
 type union=string|undefined
+
 function App():JSX.Element {
-const item1:string[]=useStore((state:store)=>state.item1)
-const item2:string[]=useStore((state:store)=>state.item2)
-const item3:string[]=useStore((state:store)=>state.item3)
-const count:number=useStore((state:store)=>state.count)
-const bord:number=useStore((state:store)=>state.board)
-const del:number[]=useStore((state:store)=>state.del)
+const {item1,item2,item3,count,board,del}:store=useStore()
 const setDel:func3=useStore((state:store)=>state.setDel)
 const setRem:func5=useStore((state:store)=>state.setRem)
 const setCount:func1=useStore((state:store)=>state.setCount)
@@ -34,22 +35,21 @@ const all=useRef<HTMLDivElement>(null!)
 const active=useRef<HTMLDivElement>(null!)
 const comp=useRef<HTMLDivElement>(null!)
 const strMass:ref[]=[
-{name:'all',ref:all},
-{name:'active',ref:active},
-{name:'completed',ref:comp}
+{name:'all',ref:all,style:alls},
+{name:'active',ref:active,style:act},
+{name:'completed',ref:comp,style:completed}
 ]
-useEffect(():void=>move({type:bord}),[])
+useEffect(():void=>move({type:board}),[])
 useEffect(():void=>{
-if (bord==0) setCount(item1.length)
-else if (bord==1) setCount(item2.length)
-else setCount(item3.length)
-},[bord,item1,item2,item3])
+const mass:string[][]=[item1,item2,item3]
+setCount(mass[board].length)
+},[board,item1,item2,item3])
 useEffect(():void=>{
 const refMass:MutableRefObject<HTMLDivElement>[]=[all,active,comp]
 refMass.forEach((item:MutableRefObject<HTMLDivElement>):void=>{
-  item.current.style.border='none'
+item.current.style.border='none'
 })
-refMass[bord].current.style.border='1px solid grey'
+refMass[board].current.style.border='1px solid grey'
 },[state])
 function reducer(state:state1,{type}:action):state1{
 setBord(type)
@@ -72,15 +72,15 @@ const chan=(e:ChangeEvent<HTMLInputElement>):void=>{
   setTodo(e.target.value)
   }
 const add=():void=>{
+  if (todo!==''){
 setAdd({i:'item1',item:todo})
 setAdd({i:'item2',item:todo})
 setCount(item1.length)
   }
+  }
 const check=(e:ChangeEvent<HTMLInputElement>,item:string,i:number):void=>{
 const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
-const index:number=Number(item2.find((x:string,i:number)=>{
-  if (x==item) return i
-}))
+const index:number=item2.findIndex((x:string):boolean=>x==item)
 if (e.target.checked){
   line[i].style.textDecoration='line-through'
   line[i].style.color='grey'
@@ -97,10 +97,10 @@ if (e.target.checked){
 }
   }
 const clear=():void=>{
-const line:NodeListOf<HTMLInputElement>=document.querySelectorAll('.check1')
+const line:NodeListOf<HTMLInputElement>=document.querySelectorAll('#check1')
 const text:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
 const newItem:string[]=item1.filter((item:string,i:number):union=>{
-  if (!line[i].checked) return item
+if (!line[i].checked) return item
   })
   text.forEach(({style}:HTMLDivElement,i:number):void=>{
   style.textDecoration='none'
@@ -113,25 +113,28 @@ setList({i:'item3',item:[]})
   }
 return (
     <div>
-        <div className='name'>
-          <h1>todos</h1>
+        <div css={css`width:100%;text-align:center`}>
+          <h1 css={title}>
+            todos
+          </h1>
         </div>
-      <div className='wrap'>
-        <div className='head'>
-          <div className='setInp'>
-          <button className='set' onClick={add}>
-              <div className='img' />
+      <div css={Wrap}>
+        <div css={css`width: 100%`}>
+          <div css={setInp}>
+            <button css={Sets} onClick={add}>
+              <img css={Img} src={img} />
             </button>
             <input placeholder='what needs to be done?'
-             className='inp' type='text' onChange={chan} />
+             css={Inp} type='text' onChange={chan}
+             />
           </div>
         </div>
-        <div className='main'>
-           <All
-             item={item1}
-             del={del}
-             show={state.show1}
-             check={check}
+        <div css={Main}>
+          <All
+           item={item1}
+           del={del}
+           show={state.show1}
+           check={check}
            />
            <Active
             item={item2}
@@ -144,26 +147,25 @@ return (
             check={check}
            />
         </div>
-        <div className='foot'>
-          <div className='count'>
+        <div css={foot}>
+          <div>
             {count} items left
           </div>
-          <div className='toogle'>
-            {strMass.map(({name,ref}:ref,i:number):JSX.Element=>(
-              <div key={i} className={name}
-               ref={ref} onClick={():void=>move({type:i})}>
-                  {name}
-              </div>
+          <div css={toogle}>
+           {strMass.map(({name,ref,style}:ref,i:number):JSX.Element=>(
+             <div key={i} css={style} ref={ref}
+              onClick={():void=>move({type:i})}>
+                {name}
+             </div>
             ))}
           </div>
-          <div className='clear'
-           onClick={clear}>
-           Clear completed
+          <div onClick={clear}>
+            Clear completed
           </div>
         </div>
       </div>
-      <div className='foot1' />
-      <div className='foot2' />
+      <div css={foot1} />
+      <div css={foot2} />
     </div>
   )
 }
