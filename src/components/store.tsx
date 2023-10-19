@@ -52,13 +52,21 @@ setBoard:(action)=>set((state:store)=>{
 state.board=action
 }),
 setRem:({i,index})=>set((state:store)=>{
-if (i=='item2') state.item2.splice(index,1)
-else state.item3.splice(index,1)
+if (i=='item2'){
+ const newArr:string[]=state.item2.filter(
+(_:string,idx:number):boolean=>idx!==index)
+state.item2=[...newArr]
+}
+else {
+ const newArr:string[]=state.item3.filter(
+(_:string,idx:number):boolean=>idx!==index)
+ state.item3=[...newArr]
+}
 }),
 setAdd:({i,item})=>set((state:store)=>{
-if (i=='item1') state.item1.push(item)
-else if (i=='item2') state.item2.push(item)
-else state.item3.push(item)
+if (i=='item1') state.item1=[...state.item1,item]
+else if (i=='item2') state.item2=[...state.item2,item]
+else state.item3=[...state.item3,item]
 }),
 setList:({i,item})=>set((state:store)=>{
 if (i=='item1') state.item1=item

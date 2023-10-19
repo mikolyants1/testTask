@@ -15,6 +15,10 @@ export const foot:SerializedStyles=css({
   justifyContent: 'space-around',
   alignItems: 'center',
 })
+export const Checked:SerializedStyles=css({
+    textDecoration:'line-through',
+    color:'grey'
+})
 export const foot1:SerializedStyles=css({
     width: 395,
     margin: 'auto',
@@ -60,8 +64,9 @@ export const toogle:SerializedStyles=css({
     display: 'flex',
     fontSize: 20,
   })
+  
  export const Check:SerializedStyles=css({
-    borderRadius: '50%',
+    borderRadius: 50,
     height: 20,
     width: 20,
   })

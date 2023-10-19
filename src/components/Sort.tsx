@@ -1,10 +1,11 @@
 import {ChangeEvent,useEffect} from 'react'
-import { Check,Item } from './style'
+import { Check,Checked,Item } from './style'
 type props={
 item:string[]|null
 show:number,
 del?:number[],
-check:(e:ChangeEvent<HTMLInputElement>,item:string,i:number)=>void
+check:(item:string,i:number)=>
+(e:ChangeEvent<HTMLInputElement>)=>void
 }
 type union=JSX.Element|null
 export function All({item,show,del,check}:props):union{
@@ -20,14 +21,14 @@ del?.forEach((i:number):void=>{
   },[])
  return <>
       {item.map((item:string,i:number):JSX.Element=>(
-           <div css={Item} key={i}>
-            <input type="checkbox" id='check1' css={Check}
-             onChange={(e):void=>check(e,item,i)} />
-             <div className='text'>
+        <div css={Item} key={i}>
+          <input type="checkbox" css={Check}
+           onChange={check(item,i)} id='check1' />
+            <div className='text'>
               {item}
-              </div>
             </div>
-           ))}
+          </div>
+        ))}
         </>
     } 
 return null
@@ -36,30 +37,26 @@ export function Active({item,show,check}:props):union{
 if (show==1&&item){
   return <>
        {item.map((item:string,i:number):JSX.Element=>(
-           <div css={Item} key={i}>
-            <input type="checkbox" disabled={true} css={Check}
-            onChange={(e):void=>check(e,item,i)} />
-             <div className='text'>
+          <div css={Item} key={i}>
+            <input type="checkbox" disabled={true}
+             onChange={check(item,i)} css={Check} />
+             <div>
               {item}
-              </div>
             </div>
-           ))}
+          </div>
+          ))}
        </>
     }
     return null
 }
 export function Del({item,show,check}:props):union{
-    enum style{
-      textDecoration='line-through',
-      color='grey'
-    }
-    if (show==1&&item){
+  if (show==1&&item){
     return <>
          {item.map((item:string,i:number):JSX.Element=>(
            <div css={Item} key={i}>
-            <input type="checkbox" checked css={Check}
-             onChange={(e):void=>check(e,item,i)} />
-             <div style={style}>
+              <input type="checkbox" css={Check}
+               onChange={check(item,i)} checked />
+              <div css={Checked}>
                 {item}
               </div>
             </div>

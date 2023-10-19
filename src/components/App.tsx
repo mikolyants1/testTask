@@ -2,7 +2,7 @@ import { ChangeEvent,useState,useRef,useReducer,useEffect,MutableRefObject} from
 import { All,Active,Del } from './Sort'
 import useStore, { func3, func1,func5, store, func2, func4 } from './store'
 import '../App.css'
-import { foot1, foot2, title ,foot, completed, act, alls, toogle, Img, Main, Wrap, setInp, Sets, Inp} from './style'
+import {foot1,foot2,title,foot,completed,act,alls,toogle,Img,Main,Wrap,setInp,Sets,Inp} from './style'
 import { css } from '@emotion/react'
 import { SerializedStyles } from "@emotion/react/macro";
 import img from '../assets/arr.png'
@@ -20,6 +20,7 @@ interface ref{
   style:SerializedStyles
 }
 type union=string|undefined
+type refType=MutableRefObject<HTMLDivElement>
 
 function App():JSX.Element {
 const {item1,item2,item3,count,board,del}:store=useStore()
@@ -45,11 +46,11 @@ const mass:string[][]=[item1,item2,item3]
 setCount(mass[board].length)
 },[board,item1,item2,item3])
 useEffect(():void=>{
-const refMass:MutableRefObject<HTMLDivElement>[]=[all,active,comp]
-refMass.forEach((item:MutableRefObject<HTMLDivElement>):void=>{
-item.current.style.border='none'
-})
-refMass[board].current.style.border='1px solid grey'
+const Ref:refType[]=[all,active,comp]
+Ref.forEach((item:refType,i:number):void=>{
+item.current.style.border=`
+${i==board?'1px solid grey':'none'}
+ `})
 },[state])
 function reducer(state:state1,{type}:action):state1{
 setBord(type)
@@ -78,7 +79,7 @@ setAdd({i:'item2',item:todo})
 setCount(item1.length)
   }
   }
-const check=(e:ChangeEvent<HTMLInputElement>,item:string,i:number):void=>{
+const check=(item:string,i:number)=>(e:ChangeEvent<HTMLInputElement>):void=>{
 const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
 const index:number=item2.findIndex((x:string):boolean=>x==item)
 if (e.target.checked){
@@ -90,10 +91,10 @@ if (e.target.checked){
 }else{
   line[i].style.textDecoration='none'
   line[i].style.color='black'
-  const newDel=del.filter((_:number,index:number):boolean=>index!==i)
+  const newDel=del.filter((idx:number):boolean=>idx!==i)
   setDel(newDel)
   setRem({i:'item3',index:index})
-  setAdd({i:'item3',item:item})
+  setAdd({i:'item2',item:item})
 }
   }
 const clear=():void=>{
@@ -103,9 +104,9 @@ const newItem:string[]=item1.filter((item:string,i:number):union=>{
 if (!line[i].checked) return item
   })
   text.forEach(({style}:HTMLDivElement,i:number):void=>{
-  style.textDecoration='none'
-  style.color='black'
-  line[i].checked=false
+    style.textDecoration='none'
+    style.color='black'
+    line[i].checked=false
   })
 setDel([])
 setList({i:'item1',item:newItem})
@@ -154,7 +155,7 @@ return (
           <div css={toogle}>
            {strMass.map(({name,ref,style}:ref,i:number):JSX.Element=>(
              <div key={i} css={style} ref={ref}
-              onClick={():void=>move({type:i})}>
+              onClick={()=>move({type:i})}>
                 {name}
              </div>
             ))}
