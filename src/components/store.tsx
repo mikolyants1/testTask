@@ -1,81 +1,94 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist,devtools } from "zustand/middleware";
-interface action{
+export interface action{
     i:string,
-    item:string
+    item:string,
+    id?:number
 }
-interface action1 {
+export interface action1 {
     i:string,
     index:number
 }
-interface action2 {
+export interface action2 {
     i:string
-    item:string[]
+    item:Item[]
 }
-export type func1=(action:number)=>void
-export type func2=(action:action2)=>void
-export type func3=(action:number[])=>void
-export type func4=(action:action)=>void
-export type func5=(action:action1)=>void
+export interface Item{
+    id:number,
+    item:string,
+    checked:boolean
+}
+export type func<T>=(action:T)=>void
+export type func1 = ()=>void
 export interface list {
-    item1:string[],
-    item2:string[],
-    item3:string[],
+    item1:Item[],
+    item2:Item[],
+    item3:Item[],
 }
 export interface store {
-    item1:string[],
-    item2:string[],
-    item3:string[],
-    del:number[],
+    item1:Item[],
+    item2:Item[],
+    item3:Item[],
     count:number,
     board:number
-    setCount:func1,
-    setBoard:func1,
-    setRem:func5,
-    setAdd:func4,
-    setList:func2
-    setDel:func3
+    setCount:func<number>,
+    setBoard:func<number>,
+    addTodo:func<string>,
+    chanTodo:func<Item>,
+    clearList:func1
 }
 
-const useStore=create<store>()(persist(devtools(immer((set)=>({
+const useStore=create<store>()(
+persist(devtools(immer((set,get)=>({
 item1:[],
 item2:[],
 item3:[],
-del:[],
 count:0,
 board:0,
-setCount:(action)=>set((state:store)=>{
+setCount:(action)=>set((state:store):void=>{
 state.count=action
 }),
 setBoard:(action)=>set((state:store)=>{
-state.board=action
+ state.board=action
 }),
-setRem:({i,index})=>set((state:store)=>{
-if (i=='item2'){
- const newArr:string[]=state.item2.filter(
-(_:string,idx:number):boolean=>idx!==index)
-state.item2=[...newArr]
+addTodo:(action)=>{
+ const id:number = get().item1.length == 0 ?
+  0 :get().item1[get().item1.length-1].id+1
+    const todo:Item = {
+      id:id,
+      item:action,
+      checked:false
+    }
+ const newItem:Item[] = [...get().item1,todo]
+ const newItem2:Item[] = newItem
+ .filter(({checked}:Item)=>checked)
+ set({item1:newItem,item2:newItem2})
+},
+chanTodo:({id,item,checked})=>{ 
+const idx:number=get().item1
+.findIndex(({id:x}:Item):boolean=>x==id)
+const left:Item[] = get().item1.slice(0,idx)
+const right:Item[] = get().item1.slice(idx+1)
+const newItem:Item = {
+    id:id,
+    item:item,
+    checked:checked
+    }
+ const newItem1:Item[] = [
+ ...left,newItem,...right
+  ]
+ const newItem2:Item[] = newItem1
+ .filter(({checked}:Item)=>!checked)
+ const newItem3:Item[] = newItem1
+ .filter(({checked}:Item)=>checked)
+ set({item1:newItem1,item2:newItem2,item3:newItem3})
+},
+clearList:()=>{
+ const newItem:Item[] = get().item1
+ .filter(({checked}:Item)=>checked==false)
+ set({item1:newItem,item2:newItem,item3:[]})
 }
-else {
- const newArr:string[]=state.item3.filter(
-(_:string,idx:number):boolean=>idx!==index)
- state.item3=[...newArr]
-}
-}),
-setAdd:({i,item})=>set((state:store)=>{
-if (i=='item1') state.item1=[...state.item1,item]
-else if (i=='item2') state.item2=[...state.item2,item]
-else state.item3=[...state.item3,item]
-}),
-setList:({i,item})=>set((state:store)=>{
-if (i=='item1') state.item1=item
-else if (i=='item2') state.item2=item
-else state.item3=item
-}),
-setDel:(action)=>set((state:store)=>{
-    state.del=action
-})
-}))),{version:1,name:'todo'}))
+}))),{version:1,name:'todos'}))
 
 export default useStore

@@ -1,37 +1,41 @@
-import { ChangeEvent,useState,useRef,useReducer,useEffect,MutableRefObject} from 'react'
+import { ChangeEvent,useState,useRef,useReducer,
+useEffect,useCallback,MutableRefObject} from 'react'
 import { All,Active,Del } from './Sort'
-import useStore, { func3, func1,func5, store, func2, func4 } from './store'
+import useStore, { func,store,Item} from './store'
 import '../App.css'
-import {foot1,foot2,title,foot,completed,act,alls,toogle,Img,Main,Wrap,setInp,Sets,Inp} from './style'
-import { css } from '@emotion/react'
+import {foot1,foot2,title,completed,act,alls,Main,Wrap} from './style'
+import {css} from '@emotion/react'
 import { SerializedStyles } from "@emotion/react/macro";
-import img from '../assets/arr.png'
+import  Footer  from './Foot'
+import { Header } from './Header'
+
 interface state1{
-  show1:number,
-  show2:number,
-  show3:number
+  show1:boolean,
+  show2:boolean,
+  show3:boolean
 }
-interface action{
+export interface action0{
   type:number
 }
-interface ref{
+export interface ref{
   name:string,
   ref:MutableRefObject<HTMLDivElement>,
   style:SerializedStyles
 }
-type union=string|undefined
-type refType=MutableRefObject<HTMLDivElement>
 
-function App():JSX.Element {
-const {item1,item2,item3,count,board,del}:store=useStore()
-const setDel:func3=useStore((state:store)=>state.setDel)
-const setRem:func5=useStore((state:store)=>state.setRem)
-const setCount:func1=useStore((state:store)=>state.setCount)
-const setList:func2=useStore((state:store)=>state.setList)
-const setAdd:func4=useStore((state:store)=>state.setAdd)
-const setBord:func1=useStore((state:store)=>state.setBoard)
+type refType=MutableRefObject<HTMLDivElement>
+export type Node<T extends HTMLElement> = NodeListOf<T>
+export type Evt = ChangeEvent<HTMLInputElement>
+
+function App():JSX.Element{
+const {item1,item2,item3,count,board}:store=useStore()
+const setCount:func<number>=useStore((state:store)=>state.setCount)
+const chanTodo:func<Item>=useStore((state:store)=>state.chanTodo)
+const addTodo:func<string>=useStore((state:store)=>state.addTodo)
+const setBord:func<number>=useStore((state:store)=>state.setBoard)
 const [todo,setTodo]=useState<string>('')
-const [state,move]=useReducer(reducer,{show1:1,show2:0,show3:0})
+const [state,dispatch]=useReducer(reducer,
+{show1:true,show2:false,show3:false})
 const all=useRef<HTMLDivElement>(null!)
 const active=useRef<HTMLDivElement>(null!)
 const comp=useRef<HTMLDivElement>(null!)
@@ -40,9 +44,9 @@ const strMass:ref[]=[
 {name:'active',ref:active,style:act},
 {name:'completed',ref:comp,style:completed}
 ]
-useEffect(():void=>move({type:board}),[])
+useEffect(():void=>dispatch({type:board}),[])
 useEffect(():void=>{
-const mass:string[][]=[item1,item2,item3]
+const mass:Item[][]=[item1,item2,item3]
 setCount(mass[board].length)
 },[board,item1,item2,item3])
 useEffect(():void=>{
@@ -52,66 +56,44 @@ item.current.style.border=`
 ${i==board?'1px solid grey':'none'}
  `})
 },[state])
-function reducer(state:state1,{type}:action):state1{
+function reducer(state:state1,{type}:action0):state1{
 setBord(type)
 switch (type) {
   case 0:
-    return {show1:1,show2:0,show3:0}
-  break;
+    return {
+      show1:true,
+      show2:false,
+      show3:false
+    };
   case 1:
-    return {show1:0,show2:1,show3:0}
-  break;
+    return {
+      show1:false,
+      show2:true,
+      show3:false
+    };
   case 2:
-    return {show1:0,show2:0,show3:1}
-  break;    
+    return {
+      show1:false,
+      show2:false,
+      show3:true
+    };    
   default:
-    return state
-  break;
+    return state;
 }
 }
-const chan=(e:ChangeEvent<HTMLInputElement>):void=>{
+const chan=useCallback((e:Evt):void=>{
   setTodo(e.target.value)
-  }
-const add=():void=>{
-  if (todo!==''){
-setAdd({i:'item1',item:todo})
-setAdd({i:'item2',item:todo})
+  },[])
+const add=useCallback((item:string):void=>{
+ if (item!==''){
+addTodo(item)
 setCount(item1.length)
   }
-  }
-const check=(item:string,i:number)=>(e:ChangeEvent<HTMLInputElement>):void=>{
-const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
-const index:number=item2.findIndex((x:string):boolean=>x==item)
-if (e.target.checked){
-  line[i].style.textDecoration='line-through'
-  line[i].style.color='grey'
-  setDel([...del,i])
-  setRem({i:'item2',index:index})
-  setAdd({i:'item3',item:item})
-}else{
-  line[i].style.textDecoration='none'
-  line[i].style.color='black'
-  const newDel=del.filter((idx:number):boolean=>idx!==i)
-  setDel(newDel)
-  setRem({i:'item3',index:index})
-  setAdd({i:'item2',item:item})
+},[])
+const check=(id:number,item:string)=>(e:Evt):void=>{
+ const checked:boolean = e.target.checked
+chanTodo({id:id,item:item,checked:checked})
 }
-  }
-const clear=():void=>{
-const line:NodeListOf<HTMLInputElement>=document.querySelectorAll('#check1')
-const text:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
-const newItem:string[]=item1.filter((item:string,i:number):union=>{
-if (!line[i].checked) return item
-  })
-  text.forEach(({style}:HTMLDivElement,i:number):void=>{
-    style.textDecoration='none'
-    style.color='black'
-    line[i].checked=false
-  })
-setDel([])
-setList({i:'item1',item:newItem})
-setList({i:'item3',item:[]})
-  }
 return (
     <div>
         <div css={css`width:100%;text-align:center`}>
@@ -120,50 +102,36 @@ return (
           </h1>
         </div>
       <div css={Wrap}>
-        <div css={css`width: 100%`}>
-          <div css={setInp}>
-            <button css={Sets} onClick={add}>
-              <img css={Img} src={img} />
-            </button>
-            <input placeholder='what needs to be done?'
-             css={Inp} type='text' onChange={chan}
-             />
-          </div>
-        </div>
+       <Header 
+        todo={todo}
+        add={add}
+        chan={chan}
+       />
         <div css={Main}>
-          <All
+         {state.show1&&(
+           <All
            item={item1}
-           del={del}
-           show={state.show1}
            check={check}
            />
+         )}
+         {state.show2&&(
            <Active
             item={item2}
-            show={state.show2}
             check={check}
            />
+         )}
+         {state.show3&&(
            <Del
             item={item3}
-            show={state.show3}
             check={check}
            />
+         )}
         </div>
-        <div css={foot}>
-          <div>
-            {count} items left
-          </div>
-          <div css={toogle}>
-           {strMass.map(({name,ref,style}:ref,i:number):JSX.Element=>(
-             <div key={i} css={style} ref={ref}
-              onClick={()=>move({type:i})}>
-                {name}
-             </div>
-            ))}
-          </div>
-          <div onClick={clear}>
-            Clear completed
-          </div>
-        </div>
+        <Footer
+         count={count}
+         mass={strMass}
+         dispatch={dispatch}
+        />
       </div>
       <div css={foot1} />
       <div css={foot2} />

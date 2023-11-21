@@ -1,67 +1,65 @@
-import {ChangeEvent,useEffect} from 'react'
+import {useEffect} from 'react'
 import { Check,Checked,Item } from './style'
-type props={
-item:string[]|null
-show:number,
-del?:number[],
-check:(item:string,i:number)=>
-(e:ChangeEvent<HTMLInputElement>)=>void
+import { Evt, Node } from './App'
+import { Item as value } from './store'
+
+export type props={
+item:value[],
+del?:value[],
+check:(id:number,item:string)=>(e:Evt)=>void
 }
-type union=JSX.Element|null
-export function All({item,show,del,check}:props):union{
-if (show==1&&item){
-useEffect(()=>{
-const line:NodeListOf<HTMLDivElement>=document.querySelectorAll('.text')
-const check:NodeListOf<HTMLInputElement>=document.querySelectorAll('#check1')
-del?.forEach((i:number):void=>{
+
+export function All({item,check}:props):JSX.Element{
+useEffect(():void=>{
+const line:Node<HTMLDivElement>=document.querySelectorAll('.text')
+const check:Node<HTMLInputElement>=document.querySelectorAll('#check1')
+item.forEach(({checked}:value,i:number):void=>{
+  if (checked){
   line[i].style.textDecoration='line-through'
   line[i].style.color='grey'
   check[i].checked=true
-    })
-  },[])
+   } else {
+    line[i].style.textDecoration='none'
+    line[i].style.color='black'
+   }
+  
+})
+  },[item])
  return <>
-      {item.map((item:string,i:number):JSX.Element=>(
-        <div css={Item} key={i}>
+      {item.map(({id,item}:value):JSX.Element=>(
+        <div css={Item} key={id}>
           <input type="checkbox" css={Check}
-           onChange={check(item,i)} id='check1' />
+           onChange={check(id,item)} id='check1' />
             <div className='text'>
               {item}
             </div>
           </div>
         ))}
-        </>
-    } 
-return null
+    </>  
 }
-export function Active({item,show,check}:props):union{
-if (show==1&&item){
+export function Active({item,check}:props):JSX.Element{
   return <>
-       {item.map((item:string,i:number):JSX.Element=>(
-          <div css={Item} key={i}>
+       {item.map(({id,item}:value):JSX.Element=>(
+          <div css={Item} key={id}>
             <input type="checkbox" disabled={true}
-             onChange={check(item,i)} css={Check} />
+             onChange={check(id,item)} css={Check} />
              <div>
               {item}
             </div>
           </div>
           ))}
        </>
-    }
-    return null
 }
-export function Del({item,show,check}:props):union{
-  if (show==1&&item){
+export function Del({item,check}:props):JSX.Element{
     return <>
-         {item.map((item:string,i:number):JSX.Element=>(
-           <div css={Item} key={i}>
+         {item.map(({id,item,checked}:value):JSX.Element=>(
+           <div css={Item} key={id}>
               <input type="checkbox" css={Check}
-               onChange={check(item,i)} checked />
+               onChange={check(id,item)} checked={checked} />
               <div css={Checked}>
                 {item}
               </div>
             </div>
            ))}
         </>
-    }
-    return null
 }
